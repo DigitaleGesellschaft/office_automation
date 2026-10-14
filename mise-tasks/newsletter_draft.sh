@@ -46,6 +46,10 @@ if [[ "${usage_skip_fetch:-}" != "true" ]]; then
   else
     OUTPUT_DIR=input/articles mise run fetch:pages "${usage_article_links:?}"
   fi
+elif [[ ! -f input/articles/1.md ]]; then
+  # shellcheck disable=SC2016
+  echo 'Error: At least one article is required as input for this task, but the task was run with `--skip-fetch` although `input/articles/1.md` does not yet exist.'
+  exit 1
 fi
 
 # Run Goose recipe
@@ -57,10 +61,19 @@ else
 fi
 
 CONTENT=$(
-  "${GOOSE_CLI}" run --no-session --quiet \
-    --recipe newsletter_draft \
-    | tail -n 1 \
-    | jq --raw-output '.newsletter_draft'
+  "${GOOSE_CLI}" run \
+    --recipe=newsletter_draft \
+    --no-session \
+    --quiet \
+    --output-format=json \
+    | jq --raw-output '
+      select(.metadata.status == "completed")
+        // error("goose run failed: status=\(.metadata.status)")
+      | .messages[-1].content[0].text
+      | try fromjson catch error("final output is not valid JSON: \(.)")
+      | .newsletter_draft
+        // error("no newsletter_draft in final output")
+    '
 )
 
 # Normalize Confluence host trailing slash
