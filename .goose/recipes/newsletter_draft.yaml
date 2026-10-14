@@ -71,5 +71,5 @@ response:
       - newsletter_draft
 settings:
   goose_provider: google
-  goose_model: gemini-3.1-pro-preview
+  goose_model: gemini-flash-latest
   max_turns: 50
