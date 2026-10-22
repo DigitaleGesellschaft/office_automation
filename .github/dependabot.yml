@@ -8,8 +8,6 @@ updates:
       actions:
         patterns:
           - "*"
-    assignees:
-      - "salim-b"
     reviewers:
       - "salim-b"
     commit-message:
