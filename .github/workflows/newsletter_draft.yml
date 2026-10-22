@@ -20,10 +20,10 @@ jobs:
         id: check_date
         run: |
           DAY=$(date +%d)
-          if [[ 10#$DAY -ge 8 && 10#$DAY -le 14 ]]; then
-            echo "is_that_day=true" >> $GITHUB_ENV
+          if (( 10#$DAY >= 8 && 10#$DAY <= 14 )); then
+            echo "is_that_day=true" >> "$GITHUB_ENV"
           else
-            echo "is_that_day=false" >> $GITHUB_ENV
+            echo "is_that_day=false" >> "$GITHUB_ENV"
             echo "Today is day $DAY, not the second Wednesday (days 8-14). Skipping workflow."
             exit 0
           fi
