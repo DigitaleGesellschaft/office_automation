@@ -4,6 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Buffer so that (auto-)merges don't adopt a version right after its
+    # release; also required by the dependabot-cooldown audit
+    cooldown:
+      default-days: 7
     groups:
       actions:
         patterns:
