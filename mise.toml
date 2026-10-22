@@ -17,4 +17,6 @@ redactions = [
   "conda:htmd" = "latest"
   "conda:spider_cli" = "latest"
   "conda:xee-rust" = "latest"
+  jactionlint = "latest"
+  zizmor = "latest"
   "github:aaif-goose/goose" = "latest"
