@@ -1,0 +1,42 @@
+name: Lint workflows
+
+# Validates all GitHub Actions workflow files (syntax, context expressions,
+# shell scripts) on pull requests and pushes to `main`, so broken changes -
+# including automated Dependabot bumps - are caught before they reach `main`.
+#
+# NOTE: The job ID `actionlint` is the name of the status check required on
+# `main` (branch protection ruleset) for the Dependabot auto-merge setup
+# (see dependabot-auto-merge.yml). Renaming this job breaks that setup.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-workflows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      # Same pinned version as in newsletter_draft.yml
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Run actionlint v1.7.12 (checksum-verified)
+        env:
+          ACTIONLINT_VERSION: "1.7.12"
+          ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            --output /tmp/actionlint.tar.gz \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "${ACTIONLINT_SHA256}  /tmp/actionlint.tar.gz" | sha256sum --check --strict
+          tar --extract --gzip --file /tmp/actionlint.tar.gz --directory /tmp actionlint
+          /tmp/actionlint/actionlint
