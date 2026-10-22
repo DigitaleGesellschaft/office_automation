@@ -15,6 +15,9 @@ on:
 jobs:
   gen-newsletter-draft:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
       - name: Check if second Wednesday
         id: check_date
@@ -31,6 +34,8 @@ jobs:
       - name: Checkout repository
         if: env.is_that_day == 'true' || github.event_name == 'workflow_dispatch'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up mise (install tools and load env)
         if: env.is_that_day == 'true' || github.event_name == 'workflow_dispatch'
