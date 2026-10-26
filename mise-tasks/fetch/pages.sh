@@ -19,7 +19,7 @@ IFS=$' \t\n' read -r -d '' -a urls <<< "${usage_urls:?}" || true
 
 OUTPUT_DIR="${usage_output_dir:?}"
 export OUTPUT_DIR="${OUTPUT_DIR%/}"
-rm -rf "${OUTPUT_DIR}" && mkdir --parents "${OUTPUT_DIR}"
+rm -rf "$OUTPUT_DIR" && mkdir --parents "$OUTPUT_DIR"
 
 # 1. Define the worker logic as a function
 process_url() {
@@ -33,10 +33,10 @@ process_url() {
   spider --url="$url" --budget='*,1' --depth=1 scrape --output-html \
     | jq --raw-output '.html' \
     | htmd --ignored-tags="head,script,style,header" --heading-style=setex \
-    > "${file_path}"
+    > "$file_path"
 
-  sed --in-place '/^### Newsletter$/,$d' "${file_path}"
-  sed --in-place "1i ---\nurl: ${url}\n---\n" "${file_path}"
+  sed --in-place '/^### Newsletter$/,$d' "$file_path"
+  sed --in-place "1i ---\nurl: ${url}\n---\n" "$file_path"
   
   echo "✓ Fetched: $url"
 }

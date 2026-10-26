@@ -9,13 +9,13 @@ ARTICLE_LINKS="$(
     regex='<category>.*\b(Newsletter|Update)\b.*</category>'
     page=1
     found=0
-    while [ $found -eq 0 ]; do
+    while [ "$found" -eq 0 ]; do
       content=$(curl -s -L -A "Mozilla/5.0" "https://www.digitale-gesellschaft.ch/feed/?paged=$page")
       [[ "$content" != *"<item>"* ]] && break
       echo "$content" | sed -n '/<item>/,/<\/item>/p'
       [[ $content =~ $regex ]] && found=1
       ((page++))
-      [ $page -gt 10 ] && break
+      [ "$page" -gt 10 ] && break
     done
     echo '</channel></rss>'
   ) | \
@@ -24,7 +24,7 @@ ARTICLE_LINKS="$(
 )"
 
 if [[ -n "$ARTICLE_LINKS" ]]; then
-  exec env OUTPUT_DIR=input/articles mise run fetch:pages "${ARTICLE_LINKS}"
+  exec env OUTPUT_DIR=input/articles mise run fetch:pages "$ARTICLE_LINKS"
 else
   echo "No blog articles published since last newsletter." >&2
   exit 1

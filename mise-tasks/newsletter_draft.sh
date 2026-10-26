@@ -61,7 +61,7 @@ else
 fi
 
 CONTENT=$(
-  "${GOOSE_CLI}" run \
+  "$GOOSE_CLI" run \
     --recipe=newsletter_draft \
     --no-session \
     --quiet \

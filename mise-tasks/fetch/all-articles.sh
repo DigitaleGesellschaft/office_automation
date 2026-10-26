@@ -23,7 +23,7 @@ ARTICLE_LINKS="$(
 )"
 
 if [[ -n "$ARTICLE_LINKS" ]]; then
-  exec env OUTPUT_DIR=input/articles N_JOBS="${usage_jobs:?}" mise run fetch:pages "${ARTICLE_LINKS}"
+  exec env OUTPUT_DIR=input/articles N_JOBS="${usage_jobs:?}" mise run fetch:pages "$ARTICLE_LINKS"
 else
   echo "No blog article links found. This likely means this task needs debugging." >&2
   exit 1
