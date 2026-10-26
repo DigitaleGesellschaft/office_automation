@@ -17,7 +17,7 @@ The workflow is defined in [`.github/workflows/newsletter_draft.yml`](.github/wo
 - It can be manually triggered from GitHub's [**Actions**
   tab](https://github.com/DigitaleGesellschaft/office_automation/actions/workflows/newsletter_draft.yml) (e.g. for
   testing) with the option to provide a custom set of `ARTICLE_LINKS`[^1]. To be able to manually trigger the workflow,
-  one's GitHub user must be granted sufficient access rights (ask [**@datenreisen**](https://github.com/datenreisen)).
+  one's GitHub user must be granted sufficient access rights.
 
 **Remember**: The code relies on the newsletter blog posts being tagged with **`Newsletter`** in Wordpress -- this tag
 is the only structured data signal available in our RSS feeds that allows to unambiguously identify newsletters within
