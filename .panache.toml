@@ -1,0 +1,9 @@
+#:schema https://panache.bz/panache.schema.json
+
+# https://panache.bz/reference/configuration.html
+
+flavor = "gfm"
+
+[format]
+line-width = 120
+wrap = "reflow"

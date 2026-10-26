@@ -1,0 +1,50 @@
+# https://ryl-docs.pages.dev/config-presets/
+# TOML config has no `extends`, so the tables below inline the `default` preset (ryl enables no rules by default) with this repo's overrides applied.
+
+exclude = [
+  "secrets.enc.env.yaml",
+  ".mise/locks/**",
+]
+
+[files]
+yaml = [
+  "*.yaml",
+  "*.yml",
+]
+
+[lint.rules]
+anchors = "enable"
+braces = "enable"
+brackets = "enable"
+colons = "enable"
+commas = "enable"
+document-end = "disable"
+empty-lines = "enable"
+empty-values = "disable"
+float-values = "disable"
+hyphens = "enable"
+indentation = "enable"
+key-duplicates = "enable"
+key-ordering = "disable"
+new-line-at-end-of-file = "enable"
+new-lines = "enable"
+octal-values = "disable"
+quoted-strings = "disable"
+trailing-spaces = "enable"
+
+# accomodate GH Actions full commit SHAs pins
+[lint.rules.line-length]
+level = "warning"
+max = 140
+
+[lint.rules.comments]
+level = "warning"
+min-spaces-from-content = 1
+
+[lint.rules.comments-indentation]
+level = "warning"
+
+[lint.rules.truthy]
+level = "warning"
+# GitHub Actions workflow files key their triggers on `on:` - a bare truthy key must not be flagged
+check-keys = false

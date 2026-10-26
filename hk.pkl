@@ -1,0 +1,95 @@
+amends "package://github.com/jdx/hk/releases/download/v2.8.1/hk@2.8.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.8.1/hk@2.8.1#/Builtins.pkl"
+
+local mdGlobs = List("**/*.md", "**/*.markdown")
+
+local linters = new Mapping<String, Step> {
+  // -disable-indent-size: padding here is marker/string-driven (Markdown list indents, quoted
+  // string continuations), so the indent_size multiple rule is noise - shell indentation is the
+  // shfmt step's job (.editorconfig). Every other EditorConfig rule stays in force.
+  ["editorconfig-checker"] = (Builtins.editorconfig_checker) {
+    check {
+      command {
+        argv = List("editorconfig-checker", "-disable-indent-size", "{{files}}")
+      }
+    }
+    fix {
+      command {
+        argv = List("editorconfig-checker", "-disable-indent-size", "--fix", "{{files}}")
+      }
+    }
+  }
+  ["shellcheck"] = Builtins.shellcheck
+  ["shfmt"] = Builtins.shfmt 
+  ["shellharden"] = Builtins.shellharden
+  // jactionlint (maintained actionlint fork, hk builtin): workflows, composite actions and
+  // Dependabot config. Profile and per-rule policy live in .github/jactionlint.yaml (applies to
+  // hk, CI and editors alike; `default` = actionlint checks + zizmor-parity regular-persona rules).
+  ["jactionlint"] = Builtins.jactionlint
+  // zizmor (GitHub Actions security audit, hk builtin). Mode follows the environment: a token
+  // (GH_TOKEN/GITHUB_TOKEN/ZIZMOR_GITHUB_TOKEN) enables zizmor's four online-only audits
+  // (impostor-commit, known-vulnerable-actions, ref-confusion, stale-action-refs); without one,
+  // the audit is fully offline. CI passes its default GITHUB_TOKEN for the strongest audit
+  // (lint.yaml check job). Rule policy: .github/zizmor.yml. -qq trims zizmor's tracing noise
+  // (version banner, per-file completion notices, offline-mode and YAML-anchors beta notices -
+  // anchors are used by design); findings render regardless of verbosity.
+  ["zizmor"] = (Builtins.zizmor) {
+    check {
+      command {
+        argv = List("zizmor", "-qq", "--no-progress", "{{files}}")
+      }
+    }
+    fix {
+      command {
+        argv = List("zizmor", "-qq", "--no-progress", "--fix", "{{files}}")
+      }
+    }
+  }
+  // ryl (Rust yamllint re-implementation, configured in .ryl.toml); --strict on check and fix so
+  // the .ryl.toml warning-level rules keep blocking (fix's exit code is then self-verifying).
+  // check_diff/check_after_diff are cleared: hk's fix mode skips the fixer when check_diff exits
+  // 0, but ryl's --diff exits 0 even for unfixable findings (verified 2026-10-20; upstream: root TODO.md).
+  ["ryl"] = (Builtins.ryl) {
+    check_diff = null
+    check_after_diff = false
+    check_list_files = null
+    check {
+      command {
+        argv = List("ryl", "check", "--strict", "{{files}}")
+      }
+    }
+    fix {
+      command {
+        argv = List("ryl", "check", "--fix", "--strict", "{{files}}")
+      }
+    }
+  }
+  // Panache owns ALL Markdown formatting (.agents/skills/ha-app-markdown, .panache.toml); explicit
+  // paths bypass panache's config excludes, hence mdExcludes.
+  ["panache-format"] {
+    glob = mdGlobs
+    check = "panache format --check {{files}}"
+    fix = "panache format {{files}}"
+  }
+  // Semantic lint (references, heading hierarchy, ...); not auto-fixable.
+  ["panache-lint"] {
+    glob = mdGlobs
+    check = "panache lint {{files}}"
+  }
+  ["final-newline"] = Builtins.newlines
+}
+
+steps = linters
+
+hooks {
+  ["pre-commit"] {
+    fix = true
+    stash = "git"
+    steps = linters
+  }
+  ["commit-msg"] {
+    steps {
+      ["conventional-commit"] = Builtins.check_conventional_commit
+    }
+  }
+}

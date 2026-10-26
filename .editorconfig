@@ -1,0 +1,14 @@
+# https://editorconfig.org
+root = true
+
+[**]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+# shfmt printer style (hk's shfmt step reads these for every file it selects; other tools ignore the unknown properties)
+binary_next_line = true
+switch_case_indent = true
+function_next_line = false
+space_redirects = false

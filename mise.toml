@@ -11,12 +11,40 @@ redactions = [
   task.timings = true
   verbose = false
 
+[tasks.fmt]
+  description = "Auto-format the repository's Markdown via Panache"
+  run = "panache format ."
+
+[tasks.lint]
+  description = "Lint all tracked files via hk (same checks as the pre-commit hook)"
+  run = "hk check --all --no-fail-fast"
+  output = "interleave"
+
+[tasks.install-git-hooks]
+description = "Install hk git hooks user-wide via `~/.gitconfig` (needs Git 2.54+)"
+run = """
+need=2.54
+have=$(git --version | sed 's/^git version //;s/ .*$//')
+if [ "$(printf '%s\\n%s\\n' "$need" "$have" | sort -V | head -n1)" != "$need" ]; then
+  echo "mise run install-git-hooks: git >= $need required (config-based hooks), found $have" >&2
+  exit 1
+fi
+exec hk install --global --mise
+"""
+skip_if = """
+f="${XDG_CONFIG_HOME:-$HOME/.config}/git/config"; [[ -f "$f" ]] || f="$HOME/.gitconfig"; [[ -f "$f" ]] && rg -q '^\\s*\\[\\s*hook\\s+"hk-[\\w-]+"\\s*\\]' "$f"
+"""
+
 [tools]
+  editorconfig-checker = "latest"
+  jactionlint = "latest"
   jq = "latest"
   pandoc = "latest"
+  ripgrep = "latest"
+  zizmor = "latest"
+  "aqua:owenlamont/ryl" = "latest"
   "conda:htmd" = "latest"
+  "conda:panache" = "latest"
   "conda:spider_cli" = "latest"
   "conda:xee-rust" = "latest"
-  jactionlint = "latest"
-  zizmor = "latest"
   "github:aaif-goose/goose" = "latest"
