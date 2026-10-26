@@ -48,7 +48,7 @@ local linters = new Mapping<String, Step> {
   // ryl (Rust yamllint re-implementation, configured in .ryl.toml); --strict on check and fix so
   // the .ryl.toml warning-level rules keep blocking (fix's exit code is then self-verifying).
   // check_diff/check_after_diff are cleared: hk's fix mode skips the fixer when check_diff exits
-  // 0, but ryl's --diff exits 0 even for unfixable findings (verified 2026-10-20; upstream: root TODO.md).
+  // 0, but ryl's --diff exits 0 even for unfixable findings (verified 2026-10-20).
   ["ryl"] = (Builtins.ryl) {
     check_diff = null
     check_after_diff = false
@@ -64,8 +64,6 @@ local linters = new Mapping<String, Step> {
       }
     }
   }
-  // Panache owns ALL Markdown formatting (.agents/skills/ha-app-markdown, .panache.toml); explicit
-  // paths bypass panache's config excludes, hence mdExcludes.
   ["panache-format"] {
     glob = mdGlobs
     check = "panache format --check {{files}}"
