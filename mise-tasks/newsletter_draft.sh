@@ -41,7 +41,7 @@ if [[ "${usage_skip_fetch:-}" != "true" ]]; then
   #   OUTPUT_DIR=input/newsletters mise run fetch:pages "${usage_newsletter_links:?}"
   # fi
 
-  if [[ -z "${usage_article_links:-}" ]] ; then
+  if [[ -z "${usage_article_links:-}" ]]; then
     mise run fetch:latest-articles
   else
     OUTPUT_DIR=input/articles mise run fetch:pages "${usage_article_links:?}"
@@ -107,12 +107,13 @@ COUNTER=1
 ## Add serial nr to title if a page with the title already exists
 echo "Checking if page with title '$TITLE' already exists..."
 while true; do
-  CHECK_RESPONSE=$(curl \
-    --silent \
-    --location \
-    --header "Authorization: Bearer ${usage_confluence_pat:?}" \
-    --request GET \
-    "${CONFLUENCE_HOST}/rest/api/content?title=$(echo -n "$TITLE" | jq -sRr @uri)&spaceKey=${usage_confluence_space_key:?}"
+  CHECK_RESPONSE=$(
+    curl \
+      --silent \
+      --location \
+      --header "Authorization: Bearer ${usage_confluence_pat:?}" \
+      --request GET \
+      "${CONFLUENCE_HOST}/rest/api/content?title=$(echo -n "$TITLE" | jq -sRr @uri)&spaceKey=${usage_confluence_space_key:?}"
   )
 
   if [[ $(echo "$CHECK_RESPONSE" | jq '.size') -gt 0 ]]; then
@@ -165,5 +166,5 @@ fi
 echo "Confluence wiki page created successfully: $CONFLUENCE_PAGE_LINK"
 
 if [[ "${GITHUB_ACTIONS:-}" == "true" ]]; then
-  echo "Erstellte Wiki-Seite: [**$TITLE**]($CONFLUENCE_PAGE_LINK)" >> "$GITHUB_STEP_SUMMARY"
+  echo "Erstellte Wiki-Seite: [**$TITLE**]($CONFLUENCE_PAGE_LINK)" >>"$GITHUB_STEP_SUMMARY"
 fi

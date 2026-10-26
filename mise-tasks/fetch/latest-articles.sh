@@ -18,9 +18,9 @@ ARTICLE_LINKS="$(
       [ "$page" -gt 10 ] && break
     done
     echo '</channel></rss>'
-  ) | \
-    xee xpath "string-join(//item[category = ('Newsletter', 'Update')][1]/preceding-sibling::item[not(category = ('Veranstaltungen'))]/link, ' ')" | \
-    tr -d '"'
+  ) \
+    | xee xpath "string-join(//item[category = ('Newsletter', 'Update')][1]/preceding-sibling::item[not(category = ('Veranstaltungen'))]/link, ' ')" \
+    | tr -d '"'
 )"
 
 if [[ -n "$ARTICLE_LINKS" ]]; then

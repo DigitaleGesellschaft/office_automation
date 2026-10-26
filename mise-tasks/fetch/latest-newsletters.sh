@@ -4,9 +4,9 @@
 set -euo pipefail
 
 NEWSLETTER_LINKS="$(
-  curl -s -L -A "Mozilla/5.0" https://www.digitale-gesellschaft.ch/feed/?tag=newsletter | \
-    xee xpath "string-join(//item/link, ' ')" | \
-    tr -d '"'
+  curl -s -L -A "Mozilla/5.0" https://www.digitale-gesellschaft.ch/feed/?tag=newsletter \
+    | xee xpath "string-join(//item/link, ' ')" \
+    | tr -d '"'
 )"
 
 if [[ -n "$NEWSLETTER_LINKS" ]]; then

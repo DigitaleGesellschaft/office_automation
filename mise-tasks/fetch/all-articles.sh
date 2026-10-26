@@ -14,9 +14,9 @@ ARTICLE_LINKS="$(
     content=$(curl -s -L -A "Mozilla/5.0" "https://www.digitale-gesellschaft.ch/feed/?paged=$page")
     [[ "$content" != *"<item>"* ]] && break
 
-    echo "$content" | \
-      xee xpath "string-join(//item[not(category = ('Newsletter', 'Veranstaltungen'))]/link, ' ')" | \
-      tr -d '"'
+    echo "$content" \
+      | xee xpath "string-join(//item[not(category = ('Newsletter', 'Veranstaltungen'))]/link, ' ')" \
+      | tr -d '"'
 
     ((page++))
   done

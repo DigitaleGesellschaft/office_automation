@@ -14,9 +14,9 @@ NEWSLETTER_LINKS="$(
     content=$(curl -s -L -A "Mozilla/5.0" "https://www.digitale-gesellschaft.ch/feed/?tag=newsletter&paged=$page")
     [[ "$content" != *"<item>"* ]] && break
 
-    echo "$content" | \
-      xee xpath "string-join(//item/link, ' ')" | \
-      tr -d '"'
+    echo "$content" \
+      | xee xpath "string-join(//item/link, ' ')" \
+      | tr -d '"'
 
     ((page++))
   done
