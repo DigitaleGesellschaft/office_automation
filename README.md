@@ -11,8 +11,8 @@ instance](https://wiki.digitale-gesellschaft.ch/).
 The workflow is defined in [`.github/workflows/newsletter_draft.yml`](.github/workflows/newsletter_draft.yml).
 
 - It executes the Bash script [`mise-tasks/newsletter_draft.sh`](mise-tasks/newsletter_draft.sh) via
-  `mise run newsletter_draft`. The script executes a Codename Goose
-  [recipe](https://goose-docs.ai/docs/guides/recipes/recipe-reference) stored under
+  `mise run newsletter_draft`. The script executes a [Goose
+  recipe](https://goose-docs.ai/docs/guides/recipes/recipe-reference) stored under
   [`.goose/recipes/newsletter_draft.yaml`](.goose/recipes/newsletter_draft.yaml).
 - It uses a cron schedule [`0 0 * * 3`](.github/workflows/newsletter_draft.yml#L7) (every Wednesday) and then filters
   for the second Wednesday (days 8-14 of the month).
