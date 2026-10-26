@@ -2,8 +2,8 @@ name: Dependabot auto-merge
 
 # Enables GitHub's native auto-merge on Dependabot pull requests so they merge
 # themselves once all merge requirements on `main` are met (currently: the
-# required `jactionlint` and `zizmor` status checks, see lint.yml). This
-# workflow only *requests* the merge - GitHub performs the merge itself and
+# required `jactionlint` and `zizmor` status checks, see `lint.yml`). This
+# workflow only *requests* the merge – GitHub performs the merge itself and
 # never before the requirements pass.
 #
 # Scope: patch and minor version bumps, plus any security update. Major
