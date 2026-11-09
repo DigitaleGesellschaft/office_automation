@@ -1,0 +1,42 @@
+# deletes the head branch of merged Dependabot pull requests if it still exists 60s after merge, as a backstop in case
+# Dependabot's own post-merge cleanup fails.
+
+name: Dependabot branch cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  delete-head-branch:
+    if: >-
+      github.event.pull_request.merged &&
+      github.event.pull_request.user.id == 49699333
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Grace period
+        run: sleep 60
+
+      - name: Delete head branch if it still exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if err="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$HEAD_REF" 2>&1 >/dev/null)"; then
+            echo "Head branch '$HEAD_REF' still exists; deleting."
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$HEAD_REF"
+            echo "Deleted head branch '$HEAD_REF'."
+          elif grep -q '(HTTP 404)' <<<"$err"; then
+            echo "Head branch '$HEAD_REF' does not exist; nothing to delete."
+          else
+            echo "::warning::Unable to determine whether head branch '$HEAD_REF' exists ($err); not deleting."
+          fi
