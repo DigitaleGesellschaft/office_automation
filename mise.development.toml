@@ -1,3 +1,5 @@
+#:schema https://mise.jdx.dev/schema/mise.json
+
 [[env._.file]]
   # NOTE: rage (used by rops which in turn is used by mise) doesn't yet support decrypting with PQ-safe age identities, cf. https://github.com/str4d/rage/issues/598
   path = "secrets.env.yaml"

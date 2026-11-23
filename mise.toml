@@ -1,8 +1,8 @@
-redactions = [
-  "CONFLUENCE_PAT",
-  "GOOGLE_API_KEY",
-  "OPENROUTER_API_KEY"
-]
+#:schema https://mise.jdx.dev/schema/mise.json
+
+# https://mise.jdx.dev/configuration.html
+
+redactions = [ "CONFLUENCE_PAT", "GOOGLE_API_KEY", "OPENROUTER_API_KEY" ]
 
 [[env._.file]]
   path = "config.env.yaml"
@@ -21,8 +21,8 @@ redactions = [
   output = "interleave"
 
 [tasks.install-git-hooks]
-description = "Install hk git hooks user-wide via `~/.gitconfig` (needs Git 2.54+)"
-run = """
+  description = "Install hk git hooks user-wide via `~/.gitconfig` (needs Git 2.54+)"
+  run = """
 need=2.54
 have=$(git --version | sed 's/^git version //;s/ .*$//')
 if [ "$(printf '%s\\n%s\\n' "$need" "$have" | sort -V | head -n1)" != "$need" ]; then
@@ -31,7 +31,7 @@ if [ "$(printf '%s\\n%s\\n' "$need" "$have" | sort -V | head -n1)" != "$need" ];
 fi
 exec hk install --global --mise
 """
-skip_if = """
+  skip_if = """
 f="${XDG_CONFIG_HOME:-$HOME/.config}/git/config"; [[ -f "$f" ]] || f="$HOME/.gitconfig"; [[ -f "$f" ]] && rg -q '^\\s*\\[\\s*hook\\s+"hk-[\\w-]+"\\s*\\]' "$f"
 """
 
