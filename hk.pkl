@@ -45,11 +45,16 @@ local linters = new Mapping<String, Step> {
       }
     }
   }
-  // ryl (Rust yamllint re-implementation, configured in .ryl.toml); --strict on check and fix so
-  // the .ryl.toml warning-level rules keep blocking (fix's exit code is then self-verifying).
-  // check_diff/check_after_diff are cleared: hk's fix mode skips the fixer when check_diff exits
-  // 0, but ryl's --diff exits 0 even for unfixable findings (verified 2026-10-20).
-  ["ryl"] = (Builtins.ryl) {
+  // ryl format (same .ryl.toml selection/exclusions)
+  ["ryl-format"] {
+    types = List("yaml")
+    exclude = List(".mise/locks/**", "*.enc.env.yaml")
+    check =
+      "ryl format --check --config-data 'output = { standard = { path = \"-\" } }' {{files}} 2>/dev/null"
+    fix = "ryl format {{files}}"
+  }
+  // ryl (Rust yamllint re-implementation, configured in .ryl.toml); --strict on check and fix.
+  ["ryl-lint"] = (Builtins.ryl) {
     check_diff = null
     check_after_diff = false
     check_list_files = null
@@ -61,6 +66,17 @@ local linters = new Mapping<String, Step> {
     fix {
       command {
         argv = List("ryl", "check", "--fix", "--strict", "{{files}}")
+      }
+    }
+  }
+  // tombi (TOML linter/formatter): schemas bind per-file via `#:schema` top directives
+  // (strict mode – unknown keys are errors).
+  ["tombi-format"] = Builtins.tombi_format
+  // tombi exits 0 on its warn-severity rules by default, so --error-on-warnings makes them gate-fail
+  ["tombi-lint"] = (Builtins.tombi) {
+    check {
+      command {
+        argv = List("tombi", "lint", "--quiet", "--error-on-warnings", "{{files}}")
       }
     }
   }

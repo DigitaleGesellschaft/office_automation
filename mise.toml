@@ -13,7 +13,11 @@ redactions = [ "CONFLUENCE_PAT", "GOOGLE_API_KEY", "OPENROUTER_API_KEY" ]
 
 [tasks.fmt]
   description = "Auto-format the repository's Markdown via Panache"
-  run = "panache format ."
+  run = [
+    "panache format .",
+    "ryl format .",
+    "tombi format .",
+  ]
 
 [tasks.lint]
   description = "Lint all tracked files via hk (same checks as the pre-commit hook)"
