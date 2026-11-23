@@ -74,7 +74,7 @@ response:
       newsletter_draft:
         type: string
         minLength: 1
-        description: "Markdown-formatted draft text for the monthly newsletter from *Digitale Gesellschaft Schweiz*"
+        description: Markdown-formatted draft text for the monthly newsletter from *Digitale Gesellschaft Schweiz*
     required:
       - newsletter_draft
 settings:

@@ -1,9 +1,9 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
     # Buffer so that (auto-)merges don't adopt a version right after its
     # release; also required by the dependabot-cooldown audit
     cooldown:
@@ -11,10 +11,10 @@ updates:
     groups:
       actions:
         patterns:
-          - "*"
+          - '*'
     reviewers:
-      - "salim-b"
+      - salim-b
     commit-message:
-      prefix: "ci"
-      prefix-development: "ci-dev"
-      include: "scope"
+      prefix: ci
+      prefix-development: ci-dev
+      include: scope
