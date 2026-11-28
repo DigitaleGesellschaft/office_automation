@@ -12,8 +12,6 @@ updates:
       actions:
         patterns:
           - '*'
-    reviewers:
-      - salim-b
     commit-message:
       prefix: ci
       prefix-development: ci-dev
