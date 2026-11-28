@@ -1,11 +1,11 @@
+# https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
+
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-    # Buffer so that (auto-)merges don't adopt a version right after its
-    # release; also required by the dependabot-cooldown audit
     cooldown:
       default-days: 7
     groups:
