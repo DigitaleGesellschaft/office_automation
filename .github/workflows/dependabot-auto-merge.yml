@@ -6,6 +6,12 @@ name: Dependabot auto-merge
 # workflow only *requests* the merge – GitHub performs the merge itself and
 # never before the requirements pass.
 #
+# The head branch is deleted in this same run right after the merge completes:
+# the merge is carried out by GitHub's auto-merge machinery on behalf of
+# `GITHUB_TOKEN`, and GitHub never runs workflows for `GITHUB_TOKEN`-triggered
+# events (anti-recursion rule), so a `pull_request.closed`-based cleanup
+# workflow could never fire for these merges.
+#
 # Scope: patch and minor version bumps, plus any security update. Major
 # version bumps are left for manual review.
 #
@@ -57,11 +63,31 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: gh pr review "$PR_URL" --approve
 
-      - name: Enable auto-merge (rebase)
+      - name: Enable auto-merge (rebase) and delete head branch after merge
         if: >-
           steps.metadata.outputs.update-type != 'version-update:semver-major' ||
           steps.metadata.outputs.ghsa-id != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: gh pr merge "$PR_URL" --auto --rebase
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          gh pr merge "$PR_URL" --auto --rebase
+          state=OPEN
+          for _ in {1..24}; do
+            sleep 15
+            state="$(gh pr view "$PR_URL" --json state --jq .state)"
+            [ "$state" = OPEN ] || break
+          done
+          if [ "$state" != MERGED ]; then
+            echo "::warning::Pull request not merged after ~6 min (state: ${state:-unknown}); leaving head branch '$HEAD_REF' alone."
+            exit 0
+          fi
+          ref="repos/$GITHUB_REPOSITORY/git/refs/heads/$HEAD_REF"
+          if err="$(gh api --method DELETE "$ref" 2>&1)"; then
+            echo "Deleted head branch '$HEAD_REF'."
+          elif grep -q '(HTTP 404)' <<<"$err"; then
+            echo "Head branch '$HEAD_REF' was already deleted (e.g. by Dependabot's own post-merge cleanup)."
+          else
+            echo "::warning::Could not delete head branch '$HEAD_REF' ($err)."
+          fi
